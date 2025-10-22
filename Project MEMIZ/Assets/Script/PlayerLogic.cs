@@ -10,7 +10,9 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private int totaljump;
     [SerializeField] private Animator anim;
-
+    [SerializeField] private Transform look;
+    [SerializeField] private Transform cameraTarget;
+    [SerializeField] private float cameraSpeed;
     private int jumpLes;
     private bool canjump;
     private bool isGroundCheck;
@@ -41,8 +43,13 @@ public class PlayerLogic : MonoBehaviour
     {
         MoveLogic();
         CheckArea();
+        CameraMove();
     }
 
+    void CameraMove()
+    {
+        cameraTarget.position = Vector3.MoveTowards(cameraTarget.position, look.position, cameraSpeed);
+    }
     void Canjump()
     {
         if (isGroundCheck && rb2d.linearVelocity.y <= 0)
