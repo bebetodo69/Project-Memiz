@@ -1,16 +1,10 @@
 fileFormatVersion: 2
-guid: a7b7620af10231d4ba689cd811a068d7
+guid: 450b1962fe6bd524b81f427c50750fa8
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3214685828008059052
-    second: Decors_0
-  - first:
-      213: -4213649053517864761
-    second: Decors_1
-  - first:
-      213: 4249552439732064735
-    second: Decors_2
+      213: 2553837833099583682
+    second: download__1_-removebg-preview_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -132,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Decors_0
+      name: download__1_-removebg-preview_0
       rect:
         serializedVersion: 2
-        x: 16
+        x: 6
         y: 0
-        width: 75
-        height: 101
+        width: 179
+        height: 261
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -147,52 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ca027ea7abbdc9c20800000000000000
-      internalID: 3214685828008059052
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Decors_1
-      rect:
-        serializedVersion: 2
-        x: 113
-        y: 0
-        width: 37
-        height: 17
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 7c028ecb28c1685c0800000000000000
-      internalID: -4213649053517864761
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Decors_2
-      rect:
-        serializedVersion: 2
-        x: 176
-        y: 0
-        width: 29
-        height: 21
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fd1df98cd6179fa30800000000000000
-      internalID: 4249552439732064735
+      spriteID: 2c0aad77afd017320800000000000000
+      internalID: 2553837833099583682
       vertices: []
       indices: 
       edges: []
@@ -211,9 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Decors_0: 3214685828008059052
-      Decors_1: -4213649053517864761
-      Decors_2: 4249552439732064735
+      download__1_-removebg-preview_0: 2553837833099583682
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
