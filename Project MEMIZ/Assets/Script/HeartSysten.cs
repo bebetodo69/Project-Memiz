@@ -9,7 +9,7 @@ public class HeartSysten : MonoBehaviour
     public Image[] coracao;
     public Sprite cheio;
     public Sprite vazio;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+   
     void Start()
     {
         
