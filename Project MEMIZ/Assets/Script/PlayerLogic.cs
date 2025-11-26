@@ -1,7 +1,4 @@
-using System;
-using System.Reflection.Emit;
 using UnityEngine;
-using Unity.Collections;
 
 public class PlayerLogic : MonoBehaviour
 {
@@ -23,20 +20,22 @@ public class PlayerLogic : MonoBehaviour
     private bool isDirectionRight = true;
     private Rigidbody2D rb2d;
 
+    // Nossa variável de vida para exemplo
+    public int playerHealth = 3;
+
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         jumpLes = totaljump;
     }
 
-    // Update is called once per frame
     void Update()
     {
-       GetInputMove();
-       DirectionCheck();
-       Canjump();
-       MoveAnim();
-       jumpAnim();
+        GetInputMove();
+        DirectionCheck();
+        Canjump();
+        MoveAnim();
+        jumpAnim();
     }
 
     private void FixedUpdate()
@@ -56,21 +55,12 @@ public class PlayerLogic : MonoBehaviour
         {
             jumpLes = totaljump;
         }
-
-        if (jumpLes <= 0)
-        {
-            canjump = false;
-        }
-
-        else
-        {
-            canjump = true;
-        }
+        canjump = jumpLes > 0; // Simplificado
     }
 
     void CheckArea()
     {
-        isGroundCheck = Physics2D.OverlapCircle(groundCheck.position, groundDist,groundLayer);
+        isGroundCheck = Physics2D.OverlapCircle(groundCheck.position, groundDist, groundLayer);
     }
 
     private void OnDrawGizmos()
@@ -94,7 +84,7 @@ public class PlayerLogic : MonoBehaviour
     {
         inputDirection = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetButton("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             jump();
         }
@@ -107,8 +97,9 @@ public class PlayerLogic : MonoBehaviour
 
     void MoveAnim()
     {
-        anim.SetFloat("HorizontalAnim", rb2d.linearVelocity.x);
+        anim.SetFloat("HorizontalAnim", Mathf.Abs(rb2d.linearVelocity.x));
     }
+
     void jump()
     {
         if (canjump)
@@ -116,7 +107,6 @@ public class PlayerLogic : MonoBehaviour
             rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
             jumpLes--;
         }
-        rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
     }
 
     void jumpAnim()
@@ -129,5 +119,33 @@ public class PlayerLogic : MonoBehaviour
     {
         isDirectionRight = !isDirectionRight;
         transform.Rotate(0.0f, 180.0f, 0.0f);
+    }
+
+    // --- DETECÇÃO DE DANO DO MONSTRO ---
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // Monstros usam tag "Enemy" no corpo
+        if (collision.gameObject.CompareTag("EnemyHead"))
+        {
+            // Opcional: Só toma dano se o contato for lateral/baixo (não a cabeça)
+            Vector2 contactPoint = collision.contacts[0].point;
+            if (contactPoint.y < transform.position.y)
+            {
+                TakeDamage();
+            }
+        }
+    }
+
+    void TakeDamage()
+    {
+        playerHealth--;
+        Debug.Log("Player tomou dano! Vida restante: " + playerHealth);
+        anim.SetTrigger("Damage"); // Animação de dano, se configurado
+        if (playerHealth <= 0)
+        {
+            Debug.Log("Player morreu!");
+            // Destroy(gameObject); // ou lógica de morte/fim de jogo
+        }
     }
 }
