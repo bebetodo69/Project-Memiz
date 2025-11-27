@@ -1,4 +1,7 @@
+using System;
+using System.Reflection.Emit;
 using UnityEngine;
+using Unity.Collections;
 
 public class PlayerLogic : MonoBehaviour
 {
@@ -20,13 +23,26 @@ public class PlayerLogic : MonoBehaviour
     private bool isDirectionRight = true;
     private Rigidbody2D rb2d;
 
-    // Nossa variável de vida para exemplo
+    // VIDA DO PLAYER
     public int playerHealth = 3;
+    public int maxHealth = 3;
+    public HeartSysten heartSysten;
+
+    // SISTEMA DE CORAÇÕES NA UI
+    public HeartSysten heartSystem;
 
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         jumpLes = totaljump;
+
+        // inicializa UI de corações
+        if (heartSystem != null)
+        {
+            heartSystem.vidaMaxima = maxHealth;
+            heartSystem.vida = playerHealth;
+            heartSystem.AtualizarCoroes();
+        }
     }
 
     void Update()
@@ -49,13 +65,15 @@ public class PlayerLogic : MonoBehaviour
     {
         cameraTarget.position = Vector3.MoveTowards(cameraTarget.position, look.position, cameraSpeed);
     }
+
     void Canjump()
     {
         if (isGroundCheck && rb2d.linearVelocity.y <= 0)
         {
             jumpLes = totaljump;
         }
-        canjump = jumpLes > 0; // Simplificado
+
+        canjump = jumpLes > 0;
     }
 
     void CheckArea()
@@ -97,7 +115,7 @@ public class PlayerLogic : MonoBehaviour
 
     void MoveAnim()
     {
-        anim.SetFloat("HorizontalAnim", Mathf.Abs(rb2d.linearVelocity.x));
+        anim.SetFloat("HorizontalAnim", rb2d.linearVelocity.x);
     }
 
     void jump()
@@ -121,31 +139,36 @@ public class PlayerLogic : MonoBehaviour
         transform.Rotate(0.0f, 180.0f, 0.0f);
     }
 
-    // --- DETECÇÃO DE DANO DO MONSTRO ---
-
+    // --------------------------
+    // DANO QUANDO ENCOSTA NO MONSTRO
+    // --------------------------
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // Monstros usam tag "Enemy" no corpo
-        if (collision.gameObject.CompareTag("EnemyHead"))
+        // corpo do monstro com Tag "Enemy"
+        if (collision.gameObject.CompareTag("Enemy"))
         {
-            // Opcional: Só toma dano se o contato for lateral/baixo (não a cabeça)
-            Vector2 contactPoint = collision.contacts[0].point;
-            if (contactPoint.y < transform.position.y)
-            {
-                TakeDamage();
-            }
+            TakeDamage();
         }
     }
 
     void TakeDamage()
     {
         playerHealth--;
+        if (playerHealth < 0) playerHealth = 0;
+
         Debug.Log("Player tomou dano! Vida restante: " + playerHealth);
-        anim.SetTrigger("Damage"); // Animação de dano, se configurado
+
+        if (heartSystem != null)
+        {
+            heartSystem.vida = playerHealth;
+            heartSystem.AtualizarCoroes();
+        }
+
         if (playerHealth <= 0)
         {
             Debug.Log("Player morreu!");
-            // Destroy(gameObject); // ou lógica de morte/fim de jogo
+            // lógica de morte
         }
     }
+
 }
