@@ -17,6 +17,19 @@ public class PlayerLogic : MonoBehaviour
     private bool canjump;
     private bool isGroundCheck;
     
+    public void SaveAtCurrentPosition()
+    {
+        SaveData data = new SaveData();
+        data.playerX = transform.position.x;
+        data.playerY = transform.position.y;
+        data.playerZ = transform.position.z;
+        data.playerHealth = playerHealth; // se quiser salvar vida
+
+        JsonSaveSystem.SaveGame(data);
+    }
+    
+    public GameOverManager gameOverManager;
+    
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
     private float inputDirection;
@@ -36,7 +49,17 @@ public class PlayerLogic : MonoBehaviour
         rb2d = GetComponent<Rigidbody2D>();
         jumpLes = totaljump;
 
-        // inicializa UI de corações
+        // CARREGAR SAVE
+        if (JsonSaveSystem.HasSave())
+        {
+            SaveData data = JsonSaveSystem.LoadGame();
+            if (data != null)
+            {
+                transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+                playerHealth = data.playerHealth;
+            }
+        }
+
         if (heartSystem != null)
         {
             heartSystem.vidaMaxima = maxHealth;
@@ -167,7 +190,11 @@ public class PlayerLogic : MonoBehaviour
         if (playerHealth <= 0)
         {
             Debug.Log("Player morreu!");
-            // lógica de morte
+
+            if (gameOverManager != null)
+            {
+                gameOverManager.ShowGameOver();
+            }
         }
     }
 
