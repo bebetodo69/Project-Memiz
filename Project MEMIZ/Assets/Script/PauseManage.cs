@@ -3,14 +3,29 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
-    public GameObject pausePanel;
-    public string menuSceneName = "Menu";  // nome da cena de menu (se usar botão Menu)
+    // Singleton
+    public static PauseManager Instance;
 
-    private bool isPaused = false;
+    public GameObject pausePanel;
+    public string menuSceneName = "Menu";
+
+    public bool isPaused = false;   // ficou público para outros scripts lerem
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // não destrói ao trocar de cena
+        }
+        else
+        {
+            Destroy(gameObject);          // garante só 1 PauseManager
+        }
+    }
 
     void Update()
     {
-        // Tecla para abrir/fechar o pause (Esc)
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
@@ -22,15 +37,19 @@ public class PauseManager : MonoBehaviour
 
     public void PauseGame()
     {
-        pausePanel.SetActive(true);   // mostra painel
-        Time.timeScale = 0f;         // pausa o tempo do jogo
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+
+        Time.timeScale = 0f;
         isPaused = true;
     }
 
     public void ResumeGame()
     {
-        pausePanel.SetActive(false);  // esconde painel
-        Time.timeScale = 1f;          // volta o tempo ao normal
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        Time.timeScale = 1f;
         isPaused = false;
     }
 
