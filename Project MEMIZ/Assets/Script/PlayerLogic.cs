@@ -49,8 +49,9 @@ public class PlayerLogic : MonoBehaviour
         rb2d = GetComponent<Rigidbody2D>();
         jumpLes = totaljump;
 
-        // CARREGAR SAVE
-        if (JsonSaveSystem.HasSave())
+        Vector3 startPosition = transform.position;
+
+        if (GameSession.loadFromSave && JsonSaveSystem.HasSave())
         {
             SaveData data = JsonSaveSystem.LoadGame();
             if (data != null)
@@ -58,6 +59,11 @@ public class PlayerLogic : MonoBehaviour
                 transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
                 playerHealth = data.playerHealth;
             }
+        }
+        else
+        {
+            transform.position = startPosition;   // início da fase
+            playerHealth = maxHealth;
         }
 
         if (heartSystem != null)
@@ -67,6 +73,7 @@ public class PlayerLogic : MonoBehaviour
             heartSystem.AtualizarCoroes();
         }
     }
+
 
     void Update()
     {
