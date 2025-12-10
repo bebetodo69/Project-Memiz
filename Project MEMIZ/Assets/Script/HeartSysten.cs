@@ -10,7 +10,6 @@ public class HeartSysten : MonoBehaviour
     public Sprite cheio;
     public Sprite vazio;
 
-    // Chame isto sempre que a vida mudar
     public void AtualizarCoroes()
     {
         if (vida > vidaMaxima)
@@ -25,5 +24,7 @@ public class HeartSysten : MonoBehaviour
 
             coracao[i].enabled = i < vidaMaxima;
         }
+
+        HudEvents.OnLifeChanged?.Invoke(vida); // notifica HUD de vida
     }
 }

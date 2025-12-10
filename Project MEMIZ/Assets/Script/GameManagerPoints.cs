@@ -24,12 +24,14 @@ public class GameManagerPoints : MonoBehaviour
     void Start()
     {
         UpdateScoreText();
+        HudEvents.OnCoinsChanged?.Invoke(score); // notifica valor inicial
     }
 
     public void AddPoints(int amount)
     {
         score += amount;
         UpdateScoreText();
+        HudEvents.OnCoinsChanged?.Invoke(score); // notifica HUD
     }
 
     void UpdateScoreText()

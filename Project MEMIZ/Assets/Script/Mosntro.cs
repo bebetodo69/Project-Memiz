@@ -17,12 +17,39 @@ public class Monster : MonoBehaviour
         Destroy(gameObject, 0.5f);
     }
 
-    void Start()
+    public class Enemy : MonoBehaviour
     {
-        if(anim == null)
-            anim = GetComponent<Animator>();
-        startPosition = transform.position;
-        initialScale = transform.localScale; // guarda o scale original
+        public EnemyData data;   // ← aqui você “liga” o ScriptableObject
+
+        int currentHealth;
+
+        void Start()
+        {
+            // currentHealth = data.maxHealth;   // COMENTADO
+            currentHealth = 3;                  // teste fixo
+        }
+
+        public void TakeDamage(int amount)
+        {
+            currentHealth -= amount;
+            if (currentHealth <= 0)
+                Die();
+        }
+
+        void Die()
+        {
+            Destroy(gameObject);
+        }
+
+        void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.collider.CompareTag("Player"))
+            {
+                // exemplo usando o dano vindo do ScriptableObject
+                // var player = collision.collider.GetComponent<PlayerLogic>();
+                // if (player != null) player.TakeDamage(data.contactDamage);
+            }
+        }
     }
 
     void Update()
