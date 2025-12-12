@@ -3,35 +3,24 @@ using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
-    // Singleton
     public static PauseManager Instance;
 
     public GameObject pausePanel;
+    public bool isPaused = false;
     public string menuSceneName = "Menu";
 
-    public bool isPaused = false;   // ficou público para outros scripts lerem
-
-    private void Awake()
+    void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // não destrói ao trocar de cena
-        }
-        else
-        {
-            Destroy(gameObject);          // garante só 1 PauseManager
-        }
+        Instance = this;
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused)
-                ResumeGame();
-            else
-                PauseGame();
+            Debug.Log("ENTER apertado");
+            if (isPaused) ResumeGame();
+            else PauseGame();
         }
     }
 
@@ -56,12 +45,15 @@ public class PauseManager : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        isPaused = false;
+        Scene current = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(current.name);
     }
 
     public void GoToMenu()
     {
         Time.timeScale = 1f;
+        isPaused = false;
         SceneManager.LoadScene(menuSceneName);
     }
 }
