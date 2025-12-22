@@ -2,17 +2,38 @@ using UnityEngine;
 
 public class Monster : MonoBehaviour
 {
-    public float speed = 2f;
+    [Header("Dados do Inimigo (ScriptableObject)")]
+    public EnemyData data;
+
+    private float speed;
+    private int currentHealth;
+
+    [Header("Movimento de patrulha")]
     public float distance = 5f;
     private Vector3 startPosition;
     private bool movingRight = true;
     private Vector3 initialScale;
 
+    [Header("Outros componentes")]
     public Animator anim;
-    public int currentHealth = 3;
 
     void Start()
     {
+        // Pega os valores do ScriptableObject
+        if (data != null)
+        {
+            speed = data.moveSpeed;
+            currentHealth = data.maxHealth;
+            // opcional: usar o nome
+            gameObject.name = data.enemyName;
+        }
+        else
+        {
+            // fallback se não tiver data atribuída
+            speed = 2f;
+            currentHealth = 3;
+        }
+
         startPosition = transform.position;
         initialScale = transform.localScale;
     }
@@ -34,17 +55,23 @@ public class Monster : MonoBehaviour
     }
 
     public void TakeDamage(int amount)
-{
-    currentHealth -= amount;
-    if (currentHealth <= 0)
-        Die();
-}
+    {
+        currentHealth -= amount;
+        if (currentHealth <= 0)
+            Die();
+    }
 
-public void Die()
-{
-    if (anim != null)
-        anim.SetTrigger("Die");   // muda para o estado Death
+    public void Die()
+    {
+        if (anim != null)
+            anim.SetTrigger("Die");   // muda para o estado Death
 
-    Destroy(gameObject, 1f);      // tempo >= duração da animação de Death
-}
+        Destroy(gameObject, 1f);      // tempo >= duração da animação de Death
+    }
+
+    // Exemplo de acesso ao dano de contato:
+    public int GetContactDamage()
+    {
+        return data != null ? data.contactDamage : 0;
+    }
 }
