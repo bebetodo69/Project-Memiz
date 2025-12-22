@@ -39,20 +39,21 @@ public class Monster : MonoBehaviour
     }
 
     void Update()
-    {
-        Vector3 direction = movingRight ? Vector3.right : Vector3.left;
-        transform.Translate(direction * speed * Time.deltaTime);
+{
+    Vector3 direction = movingRight ? Vector3.right : Vector3.left;
+    transform.Translate(direction * speed * Time.deltaTime);
 
-        if (movingRight)
-            transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
-        else
-            transform.localScale = new Vector3(-Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
+    if (movingRight)
+        transform.localScale = new Vector3(-Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
+    else
+        transform.localScale = new Vector3(Mathf.Abs(initialScale.x), initialScale.y, initialScale.z);
 
-        if (movingRight && transform.position.x >= startPosition.x + distance)
-            movingRight = false;
-        else if (!movingRight && transform.position.x <= startPosition.x - distance)
-            movingRight = true;
-    }
+    if (movingRight && transform.position.x >= startPosition.x + distance)
+        movingRight = false;
+    else if (!movingRight && transform.position.x <= startPosition.x - distance)
+        movingRight = true;
+}
+
 
     public void TakeDamage(int amount)
     {

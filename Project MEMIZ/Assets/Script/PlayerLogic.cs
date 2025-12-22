@@ -13,6 +13,8 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] private Transform look;
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private float cameraSpeed;
+
+    private SpriteRenderer spriteRenderer;
     private int jumpLes;
     private bool canjump;
     private bool isGroundCheck;
@@ -47,25 +49,25 @@ public class PlayerLogic : MonoBehaviour
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         jumpLes = totaljump;
 
         Vector3 startPosition = transform.position;
 
         if (GameSession.loadFromSave && JsonSaveSystem.HasSave())
-        {
-            SaveData data = JsonSaveSystem.LoadGame();
-            if (data != null)
             {
-                transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
-                playerHealth = data.playerHealth;
+                SaveData data = JsonSaveSystem.LoadGame();
+                if (data != null)
+                {
+                    transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+                    playerHealth = data.playerHealth;
+                }
             }
-        }
-        else
-        {
-            transform.position = startPosition;   // início da fase
-            playerHealth = maxHealth;
-        }
-
+            else
+            {
+                transform.position = startPosition;
+                playerHealth = maxHealth;
+            }
         if (heartSystem != null)
         {
             heartSystem.vidaMaxima = maxHealth;
@@ -118,13 +120,15 @@ public class PlayerLogic : MonoBehaviour
 
     void DirectionCheck()
     {
-        if (isDirectionRight && inputDirection < 0)
+            if (inputDirection > 0)
         {
-            Flip();
+            isDirectionRight = true;
+            spriteRenderer.flipX = false;   // olhando pra direita
         }
-        else if (!isDirectionRight && inputDirection > 0)
+        else if (inputDirection < 0)
         {
-            Flip();
+            isDirectionRight = false;
+            spriteRenderer.flipX = true;    // olhando pra esquerda
         }
     }
     
@@ -166,7 +170,8 @@ public class PlayerLogic : MonoBehaviour
     void Flip()
     {
         isDirectionRight = !isDirectionRight;
-        transform.Rotate(0.0f, 180.0f, 0.0f);
+        //transform.Rotate(0.0f, 180.0f, 0.0f);
+        spriteRenderer.flipX = true;
     }
 
     // --------------------------

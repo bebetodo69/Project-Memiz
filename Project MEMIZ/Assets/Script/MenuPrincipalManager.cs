@@ -8,24 +8,27 @@ public class MainMenu : MonoBehaviour
 
     public void NewGame()
     {
-        GameSession.loadFromSave = false;   // NÃO usa save
+        GameSession.loadFromSave = false;  
         Time.timeScale = 1f;
         SceneManager.LoadScene(gameSceneName);
     }
 
     public void ContinueGame()
     {
-        string path = Path.Combine(Application.persistentDataPath, "savegame.json");
-        if (File.Exists(path))
-        {
-            GameSession.loadFromSave = true; // usa save
-            Time.timeScale = 1f;
-            SceneManager.LoadScene(gameSceneName);
-        }
-        else
-        {
-            Debug.Log("Nenhum save encontrado, iniciando novo jogo.");
-            NewGame();
-        }
+    //     string path = Path.Combine(Application.persistentDataPath, "savegame.json");
+    //     if (File.Exists(path))
+    //     {
+    //         GameSession.loadFromSave = true;
+    //         Time.timeScale = 1f;
+    //         SceneManager.LoadScene(gameSceneName);
+    //     }
+    //     else
+    //     {
+    //         Debug.Log("Nenhum save encontrado, iniciando novo jogo.");
+    //         NewGame();
+    //     }
+        SaveData data = JsonSaveSystem.LoadGame();
     }
+
+    
 }
