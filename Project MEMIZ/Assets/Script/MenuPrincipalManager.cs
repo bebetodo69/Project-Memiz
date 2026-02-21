@@ -1,31 +1,34 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-public class MenuPrincipalManager : MonoBehaviour
+using System.IO;
+
+public class MainMenu : MonoBehaviour
 {
-    [SerializeField] private string Fase1;
-    [SerializeField] private GameObject painelMenuInicial;
-    [SerializeField] private GameObject painelOpcoes;
-    
-    public void Jogar()
+    public string gameSceneName = "Fase1";
+
+    public void NewGame()
     {
-        SceneManager.LoadScene("Fase1");
+        GameSession.loadFromSave = false;  
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(gameSceneName);
     }
-    
-    public void AbriOpcoes()
+
+    public void ContinueGame()
     {
-        painelMenuInicial.SetActive(false);
-        painelOpcoes.SetActive(true);
+    //     string path = Path.Combine(Application.persistentDataPath, "savegame.json");
+    //     if (File.Exists(path))
+    //     {
+    //         GameSession.loadFromSave = true;
+    //         Time.timeScale = 1f;
+    //         SceneManager.LoadScene(gameSceneName);
+    //     }
+    //     else
+    //     {
+    //         Debug.Log("Nenhum save encontrado, iniciando novo jogo.");
+    //         NewGame();
+    //     }
+        SaveData data = JsonSaveSystem.LoadGame();
     }
+
     
-    public void FecharOpcoes()
-    {
-        painelOpcoes.SetActive(false);
-        painelMenuInicial.SetActive(true);
-    }
-    
-    public void SairJogo()
-    {
-        Debug.Log("Sair do jogo");
-        Application.Quit();
-    }
 }

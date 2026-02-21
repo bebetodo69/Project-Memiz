@@ -13,9 +13,24 @@ public class PlayerLogic : MonoBehaviour
     [SerializeField] private Transform look;
     [SerializeField] private Transform cameraTarget;
     [SerializeField] private float cameraSpeed;
+
+    private SpriteRenderer spriteRenderer;
     private int jumpLes;
     private bool canjump;
     private bool isGroundCheck;
+    
+    public void SaveAtCurrentPosition()
+    {
+        SaveData data = new SaveData();
+        data.playerX = transform.position.x;
+        data.playerY = transform.position.y;
+        data.playerZ = transform.position.z;
+        data.playerHealth = playerHealth; // se quiser salvar vida
+
+        JsonSaveSystem.SaveGame(data);
+    }
+    
+    public GameOverManager gameOverManager;
     
     [SerializeField] private float moveSpeed;
     [SerializeField] private float jumpForce;
@@ -23,20 +38,52 @@ public class PlayerLogic : MonoBehaviour
     private bool isDirectionRight = true;
     private Rigidbody2D rb2d;
 
+    // VIDA DO PLAYER
+    public int playerHealth = 3;
+    public int maxHealth = 3;
+    public HeartSysten heartSysten;
+
+    // SISTEMA DE CORAÇÕES NA UI
+    public HeartSysten heartSystem;
+
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         jumpLes = totaljump;
+
+        Vector3 startPosition = transform.position;
+
+        if (GameSession.loadFromSave && JsonSaveSystem.HasSave())
+            {
+                SaveData data = JsonSaveSystem.LoadGame();
+                if (data != null)
+                {
+                    transform.position = new Vector3(data.playerX, data.playerY, data.playerZ);
+                    playerHealth = data.playerHealth;
+                }
+            }
+            else
+            {
+                transform.position = startPosition;
+                playerHealth = maxHealth;
+            }
+        if (heartSystem != null)
+        {
+            heartSystem.vidaMaxima = maxHealth;
+            heartSystem.vida = playerHealth;
+            heartSystem.AtualizarCoroes();
+        }
     }
 
-    // Update is called once per frame
+
     void Update()
     {
-       GetInputMove();
-       DirectionCheck();
-       Canjump();
-       MoveAnim();
-       jumpAnim();
+        GetInputMove();
+        DirectionCheck();
+        Canjump();
+        MoveAnim();
+        jumpAnim();
     }
 
     private void FixedUpdate()
@@ -50,6 +97,7 @@ public class PlayerLogic : MonoBehaviour
     {
         cameraTarget.position = Vector3.MoveTowards(cameraTarget.position, look.position, cameraSpeed);
     }
+
     void Canjump()
     {
         if (isGroundCheck && rb2d.linearVelocity.y <= 0)
@@ -57,20 +105,12 @@ public class PlayerLogic : MonoBehaviour
             jumpLes = totaljump;
         }
 
-        if (jumpLes <= 0)
-        {
-            canjump = false;
-        }
-
-        else
-        {
-            canjump = true;
-        }
+        canjump = jumpLes > 0;
     }
 
     void CheckArea()
     {
-        isGroundCheck = Physics2D.OverlapCircle(groundCheck.position, groundDist,groundLayer);
+        isGroundCheck = Physics2D.OverlapCircle(groundCheck.position, groundDist, groundLayer);
     }
 
     private void OnDrawGizmos()
@@ -80,13 +120,15 @@ public class PlayerLogic : MonoBehaviour
 
     void DirectionCheck()
     {
-        if (isDirectionRight && inputDirection < 0)
+            if (inputDirection > 0)
         {
-            Flip();
+            isDirectionRight = true;
+            spriteRenderer.flipX = false;   // olhando pra direita
         }
-        else if (!isDirectionRight && inputDirection > 0)
+        else if (inputDirection < 0)
         {
-            Flip();
+            isDirectionRight = false;
+            spriteRenderer.flipX = true;    // olhando pra esquerda
         }
     }
     
@@ -94,7 +136,7 @@ public class PlayerLogic : MonoBehaviour
     {
         inputDirection = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetButton("Jump"))
+        if (Input.GetButtonDown("Jump"))
         {
             jump();
         }
@@ -109,6 +151,7 @@ public class PlayerLogic : MonoBehaviour
     {
         anim.SetFloat("HorizontalAnim", rb2d.linearVelocity.x);
     }
+
     void jump()
     {
         if (canjump)
@@ -116,7 +159,6 @@ public class PlayerLogic : MonoBehaviour
             rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
             jumpLes--;
         }
-        rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
     }
 
     void jumpAnim()
@@ -128,6 +170,44 @@ public class PlayerLogic : MonoBehaviour
     void Flip()
     {
         isDirectionRight = !isDirectionRight;
-        transform.Rotate(0.0f, 180.0f, 0.0f);
+        //transform.Rotate(0.0f, 180.0f, 0.0f);
+        spriteRenderer.flipX = true;
     }
+
+    // --------------------------
+    // DANO QUANDO ENCOSTA NO MONSTRO
+    // --------------------------
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // corpo do monstro com Tag "Enemy"
+        if (collision.gameObject.CompareTag("Enemy"))
+        {
+            TakeDamage();
+        }
+    }
+
+    void TakeDamage()
+    {
+        playerHealth--;
+        if (playerHealth < 0) playerHealth = 0;
+
+        Debug.Log("Player tomou dano! Vida restante: " + playerHealth);
+
+        if (heartSystem != null)
+        {
+            heartSystem.vida = playerHealth;
+            heartSystem.AtualizarCoroes();
+        }
+
+        if (playerHealth <= 0)
+        {
+            Debug.Log("Player morreu!");
+
+            if (gameOverManager != null)
+            {
+                gameOverManager.ShowGameOver();
+            }
+        }
+    }
+
 }
